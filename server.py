@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 import api
+import json
 
 app = Flask(__name__)
 
@@ -8,9 +9,10 @@ messages = {}
 
 @app.route("/write", methods=['POST'])
 def write_message():
-    key = request.json['from'] + "_" + request.json['to']
+    data = json.loads(request.json['json_payload'])
+    key = data['from'] + "_" + data['to']
 
-    messages[key] = request.json['msg']
+    messages[key] = data['msg']
     print(messages)
 
     return api.success()
@@ -22,4 +24,4 @@ def get_messages(user):
 
     return api.send_json({x: messages[x] for x in messages if user == x.split('_')[1]})
 
-app.run()
+app.run(host='0.0.0.0')
